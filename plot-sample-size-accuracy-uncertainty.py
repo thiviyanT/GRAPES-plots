@@ -9,11 +9,12 @@ dataframe_corrected = pd.read_csv("./results_with_confidence_intervals.csv")
 
 # Remap methods and datasets
 remap_methods = {
-    'ladies': 'Ladies',
+    'ladies': 'LADIES',
     'fastgcn': 'FastGCN',
     'graphsaint': 'GraphSAINT',
     'gsgf': 'GRAPES',
     'asgcn': 'AS-GCN',
+    'grapes': 'GRAPES',
 }
 
 remap_datasets = {
@@ -33,7 +34,7 @@ remap_datasets = {
 
 # Colors for models
 colors = {
-    'Ladies': 'black',
+    'LADIES': 'black',
     'FastGCN': 'green',
     'GraphSAINT': 'orange',
     'GRAPES': '#4040FF',
@@ -85,6 +86,17 @@ for ax, dataset in zip(axes.flatten(), ordered_datasets):
     ax.set_xticklabels([32, 64, 128, 256, 512], rotation=90, fontsize=10)
     ax.set_ylim(0, 100)
 
+    # Set the x-axis to be logarithmic with base 2
+    ax.set_xscale('log', base=2)
+
 plt.tight_layout()
-plt.savefig("sampling_vs_accuracy.pdf", format='pdf', bbox_inches='tight')
+
+# Padding around the figure
+plt.subplots_adjust(left=0.05, right=0.99, top=0.94, bottom=0.1)
+
+# Add a common y-axis label and x-axis label to the entire grid of subplots
+fig.text(0.01, 0.5, 'Node Classification F1-scores', va='center', rotation='vertical', fontsize=15, fontweight='bold')
+fig.text(0.5, 0.02, 'Sample Size (logarithmic base-2)', ha='center', fontsize=15, fontweight='bold')
+
+plt.savefig("sampling_vs_accuracy_confidence_intervals.pdf", format='pdf', bbox_inches='tight')
 plt.show()
