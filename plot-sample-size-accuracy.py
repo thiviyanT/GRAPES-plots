@@ -8,11 +8,12 @@ plt.style.use('science')
 dataframe = pd.read_csv("results.csv")
 
 remap_methods = {
-    'ladies': 'Ladies',
+    'ladies': 'LADIES',
     'fastgcn': 'FastGCN',
     'gas': 'GAS',
     'graphsaint': 'GraphSAINT',
     'gsgf': 'GRAPES',
+    'grapes': 'GRAPES',
 }
 
 remap_datasets = {
@@ -22,8 +23,12 @@ remap_datasets = {
     'reddit': 'Reddit',
     'flickr': 'Flickr',
     'yelp': 'Yelp',
+    'arxiv': 'ogbn-arxiv',
     'ogb-arxiv': 'ogbn-arxiv',
+    'ogbn-arxiv': 'ogbn-arxiv',
+    'products': 'ogbn-products',
     'ogb-products': 'ogbn-products',
+    'ogbn-products': 'ogbn-products',
 }
 
 # Create a dictionary from the dataframe

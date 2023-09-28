@@ -3,10 +3,56 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os
 
+# Setting the style
+plt.style.use('science')
 
-def process_and_plot(csv_mean_0, csv_mean_1, csv_std_0, csv_std_1, output_path, steps_per_epoch_corrected, xlim_value):
-    # Setting the style
-    plt.style.use('science')
+remap_datasets = {
+    'cora': 'Cora',
+    'citeseer': 'Citeseer',
+    'pubmed': 'Pubmed',
+    'reddit': 'Reddit',
+    'flickr': 'Flickr',
+    'yelp': 'Yelp',
+    'arxiv': 'ogbn-arxiv',
+    'ogb-arxiv': 'ogbn-arxiv',
+    'ogbn-arxiv': 'ogbn-arxiv',
+    'products': 'ogbn-products',
+    'ogb-products': 'ogbn-products',
+    'ogbn-products': 'ogbn-products',
+}
+
+def plot_single_dataset(dataset_name, datasets_info, entropy_plots_dir):
+    dataset_dir = os.path.join(entropy_plots_dir, dataset_name)
+
+    # Define the paths to the CSV files for the current dataset
+    csv_mean_0_path = os.path.join(dataset_dir, 'mean_entropy0.csv')
+    csv_mean_1_path = os.path.join(dataset_dir, 'mean_entropy1.csv')
+    csv_std_0_path = os.path.join(dataset_dir, 'std_entropy0.csv')
+    csv_std_1_path = os.path.join(dataset_dir, 'std_entropy1.csv')
+
+    # Check if the CSV files exist for the current dataset
+    if os.path.exists(csv_mean_0_path) and os.path.exists(csv_mean_1_path) and os.path.exists(
+            csv_std_0_path) and os.path.exists(csv_std_1_path):
+        # Update the steps_per_epoch_corrected calculation to use the epoch count from the dictionary
+        overall_max_step = max(pd.read_csv(csv_mean_0_path)['Step'].max(), pd.read_csv(csv_mean_1_path)['Step'].max())
+        steps_per_epoch_corrected = overall_max_step / datasets_info[dataset_name]['epochs']
+
+        # Setting up subplots
+        fig, ax = plt.subplots(1, 2, figsize=(24, 8))
+
+        # Call the process_and_plot function to generate the plot for the dataset
+        process_and_plot(csv_mean_0_path, csv_mean_1_path, csv_std_0_path, csv_std_1_path, steps_per_epoch_corrected,
+                         datasets_info[dataset_name]['xlim'], ax, dataset_name)
+
+        # Save the figure for the given dataset
+        output_path = os.path.join(entropy_plots_dir, f"{dataset_name}-entropy-plot-single.pdf")
+        plt.tight_layout()
+        plt.savefig(output_path, format='pdf')
+        plt.show()
+
+
+def process_and_plot(csv_mean_0, csv_mean_1, csv_std_0, csv_std_1, steps_per_epoch_corrected, xlim_value, ax,
+                     dataset_name):
 
     # Load mean entropy CSV files
     df = pd.read_csv(csv_mean_0)
@@ -55,9 +101,6 @@ def process_and_plot(csv_mean_0, csv_mean_1, csv_std_0, csv_std_1, output_path, 
     std_entropy_ymin = min(avg_std_combined[std_entropy_0_col].min(), avg_std_combined[std_entropy_1_col].min()) - 0.005
     std_entropy_ymax = max(avg_std_combined[std_entropy_0_col].max(), avg_std_combined[std_entropy_1_col].max()) + 0.005
 
-    # Setting up subplots
-    fig, ax = plt.subplots(1, 2, figsize=(24, 8))
-
     # Plotting mean entropy on the left subplot
     ax[0].plot(avg_entropy_combined['Epoch'], avg_entropy_combined[mean_entropy_0_col],
                label='1-hop node sampling', color='#4040FF', linewidth=4.0, linestyle='--')
@@ -71,8 +114,7 @@ def process_and_plot(csv_mean_0, csv_mean_1, csv_std_0, csv_std_1, output_path, 
     ax[0].set_xlim(0, xlim_value)
     ax[0].legend(fontsize=30)
     ax[0].grid(True)
-
-    print(mean_entropy_ymin, mean_entropy_ymax)
+    ax[0].set_title(remap_datasets[dataset_name], fontsize=40)
 
     # Plotting standard deviation on the right subplot
     ax[1].plot(avg_std_combined['Epoch'], avg_std_combined[std_entropy_0_col],
@@ -87,12 +129,60 @@ def process_and_plot(csv_mean_0, csv_mean_1, csv_std_0, csv_std_1, output_path, 
     ax[1].set_xlim(0, xlim_value)
     ax[1].legend(fontsize=30)
     ax[1].grid(True)
+    ax[1].set_title(remap_datasets[dataset_name], fontsize=40)
 
-    plt.tight_layout()
-    plt.subplots_adjust(wspace=0.2)
 
-    plt.savefig(output_path, format='pdf')
-    # plt.show()
+def plot_on_subplot(csv_mean_0, csv_mean_1, csv_std_0, csv_std_1, steps_per_epoch_corrected, xlim_value, ax,
+                    dataset_name):
+    # Call the process_and_plot function with the provided subplot axes
+    process_and_plot(csv_mean_0, csv_mean_1, csv_std_0, csv_std_1, steps_per_epoch_corrected, xlim_value, ax,
+                     dataset_name)
+
+
+def generate_combined_plot(datasets_info, entropy_plots_dir):
+    # Number of datasets
+    num_datasets = len(datasets_info)
+
+    # Calculate the number of figures required
+    num_figures = (num_datasets + 3) // 4  # Each figure can accommodate 4 datasets (8 plots)
+
+    dataset_names = list(datasets_info.keys())
+
+    for fig_num in range(num_figures):
+        # Start and end indices for slicing dataset names for the current figure
+        start_idx = fig_num * 4
+        end_idx = min((fig_num + 1) * 4, num_datasets)
+
+        # Create a subplot grid with a maximum of 4 rows and 2 columns for the current figure
+        fig, axs = plt.subplots(min(4, end_idx - start_idx), 2, figsize=(24, 8 * min(4, end_idx - start_idx)))
+
+        for idx, dataset_name in enumerate(dataset_names[start_idx:end_idx]):
+            dataset_info = datasets_info[dataset_name]
+            dataset_dir = os.path.join(entropy_plots_dir, dataset_name)
+
+            # Define the paths to the CSV files for the current dataset
+            csv_mean_0_path = os.path.join(dataset_dir, 'mean_entropy0.csv')
+            csv_mean_1_path = os.path.join(dataset_dir, 'mean_entropy1.csv')
+            csv_std_0_path = os.path.join(dataset_dir, 'std_entropy0.csv')
+            csv_std_1_path = os.path.join(dataset_dir, 'std_entropy1.csv')
+
+            # Check if the CSV files exist for the current dataset
+            if os.path.exists(csv_mean_0_path) and os.path.exists(csv_mean_1_path) and os.path.exists(
+                    csv_std_0_path) and os.path.exists(csv_std_1_path):
+                # Update the steps_per_epoch_corrected calculation to use the epoch count from the dictionary
+                overall_max_step = max(pd.read_csv(csv_mean_0_path)['Step'].max(),
+                                       pd.read_csv(csv_mean_1_path)['Step'].max())
+                steps_per_epoch_corrected = overall_max_step / dataset_info['epochs']
+
+                # Generate the plot for the current dataset on the corresponding subplot
+                plot_on_subplot(csv_mean_0_path, csv_mean_1_path, csv_std_0_path, csv_std_1_path,
+                                steps_per_epoch_corrected, dataset_info['xlim'], axs[idx], dataset_name)
+
+        # Save the combined figure for the current set of datasets
+        output_path = os.path.join(entropy_plots_dir, f"combined-entropy-plot-{fig_num + 1}.pdf")
+        plt.tight_layout()
+        plt.savefig(output_path, format='pdf')
+        plt.show()
 
 
 # Dictionary with the number of epochs and x-limits for each dataset
@@ -110,25 +200,7 @@ datasets_info = {
 # Define the path to the 'entropy_plots' directory
 entropy_plots_dir = './entropy_plots'
 
-# Iterate over each dataset and generate plots
-for dataset_name, dataset_info in datasets_info.items():
-    dataset_dir = os.path.join(entropy_plots_dir, dataset_name)
+# Call the new function to generate the combined plot
+generate_combined_plot(datasets_info, entropy_plots_dir)
 
-    # Define the paths to the CSV files for the current dataset
-    csv_mean_0_path = os.path.join(dataset_dir, 'mean_entropy0.csv')
-    csv_mean_1_path = os.path.join(dataset_dir, 'mean_entropy1.csv')
-    csv_std_0_path = os.path.join(dataset_dir, 'std_entropy0.csv')
-    csv_std_1_path = os.path.join(dataset_dir, 'std_entropy1.csv')
-
-    # Check if the CSV files exist for the current dataset
-    if os.path.exists(csv_mean_0_path) and os.path.exists(csv_mean_1_path) and os.path.exists(
-            csv_std_0_path) and os.path.exists(csv_std_1_path):
-        print(dataset_name)
-        # Update the steps_per_epoch_corrected calculation to use the epoch count from the dictionary
-        overall_max_step = max(pd.read_csv(csv_mean_0_path)['Step'].max(), pd.read_csv(csv_mean_1_path)['Step'].max())
-        steps_per_epoch_corrected = overall_max_step / dataset_info['epochs']
-
-        # Generate the plot for the current dataset
-        output_path = os.path.join(entropy_plots_dir, f"{dataset_name}-entropy-plot.pdf")
-        process_and_plot(csv_mean_0_path, csv_mean_1_path, csv_std_0_path, csv_std_1_path, output_path,
-                         steps_per_epoch_corrected, dataset_info['xlim'])
+plot_single_dataset('ogbn-arxiv', datasets_info, entropy_plots_dir)
