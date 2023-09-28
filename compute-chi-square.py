@@ -1,6 +1,5 @@
 import pandas as pd
 from scipy.stats import chisquare
-from tabulate import tabulate
 
 df = pd.read_csv('./results_with_confidence_intervals.csv')
 df_sorted = df.sort_values(by=['Method', 'Dataset', 'Sampling Number'])
@@ -8,7 +7,6 @@ df_sorted = df.sort_values(by=['Method', 'Dataset', 'Sampling Number'])
 # Compute the average accuracy(mean) for every combination of 'Method' and 'Dataset'
 average_accuracy = df_sorted.groupby(['Method', 'Dataset'])['Accuracy(mean)'].mean().reset_index()
 
-# Compute the Pearson's chi-square test for each combination
 
 def compute_chi_square(group):
     observed = group['Accuracy(mean)']
@@ -16,10 +14,10 @@ def compute_chi_square(group):
     chi2, _ = chisquare(observed, [expected]*len(observed))
     return round(chi2, 6)
 
+# Compute the Pearson's chi-square test for each combination
 chi_square_values = df_sorted.groupby(['Method', 'Dataset']).apply(compute_chi_square).reset_index()
 chi_square_values.columns = ['Method', 'Dataset', 'Chi-Square Value']
 
-# 5. Export the chi-square values to a CSV file
 output_path = "./chi_square_values.csv"
 chi_square_values.to_csv(output_path, index=False)
 
