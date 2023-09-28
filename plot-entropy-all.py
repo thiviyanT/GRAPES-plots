@@ -106,30 +106,30 @@ def process_and_plot(csv_mean_0, csv_mean_1, csv_std_0, csv_std_1, steps_per_epo
                label='1-hop node sampling', color='#4040FF', linewidth=4.0, linestyle='--')
     ax[0].plot(avg_entropy_combined['Epoch'], avg_entropy_combined[mean_entropy_1_col],
                label='2-hop node sampling', color='#4040FF', linewidth=4.0, linestyle='solid')
-    ax[0].set_xlabel('Epoch', fontsize=40)
-    ax[0].set_ylabel('Mean Entropy', fontsize=40)
+    ax[0].set_xlabel('Epoch', fontsize=30)
+    ax[0].set_ylabel('Mean Entropy', fontsize=30)
     ax[0].set_xticks(ticks=range(0, xlim_value + 1, xlim_value // 10))
     ax[0].tick_params(axis='both', which='major', labelsize=20)
     ax[0].set_ylim(mean_entropy_ymin, mean_entropy_ymax)
     ax[0].set_xlim(0, xlim_value)
     ax[0].legend(fontsize=30)
     ax[0].grid(True)
-    ax[0].set_title(remap_datasets[dataset_name], fontsize=40)
+    ax[0].set_title(remap_datasets[dataset_name.lower()], fontsize=40)
 
     # Plotting standard deviation on the right subplot
     ax[1].plot(avg_std_combined['Epoch'], avg_std_combined[std_entropy_0_col],
                label='1-hop node sampling', color='#4040FF', linewidth=4.0, linestyle='--')
     ax[1].plot(avg_std_combined['Epoch'], avg_std_combined[std_entropy_1_col],
                label='2-hop node sampling', color='#4040FF', linewidth=4.0, linestyle='solid')
-    ax[1].set_xlabel('Epoch', fontsize=40)
-    ax[1].set_ylabel('Entropy Standard Deviation', fontsize=40)
+    ax[1].set_xlabel('Epoch', fontsize=30)
+    ax[1].set_ylabel('Entropy Standard Deviation', fontsize=30)
     ax[1].set_xticks(ticks=range(0, xlim_value + 1, xlim_value // 10))
     ax[1].tick_params(axis='both', which='major', labelsize=20)
     ax[1].set_ylim(std_entropy_ymin, std_entropy_ymax)
     ax[1].set_xlim(0, xlim_value)
     ax[1].legend(fontsize=30)
     ax[1].grid(True)
-    ax[1].set_title(remap_datasets[dataset_name], fontsize=40)
+    ax[1].set_title(remap_datasets[dataset_name.lower()], fontsize=40)
 
 
 def plot_on_subplot(csv_mean_0, csv_mean_1, csv_std_0, csv_std_1, steps_per_epoch_corrected, xlim_value, ax,
@@ -140,13 +140,14 @@ def plot_on_subplot(csv_mean_0, csv_mean_1, csv_std_0, csv_std_1, steps_per_epoc
 
 
 def generate_combined_plot(datasets_info, entropy_plots_dir):
+    # Order in which datasets should be plotted
+    ordered_datasets = ['Cora', 'Citeseer', 'Pubmed', 'Reddit', 'Flickr', 'Yelp', 'ogbn-arxiv', 'ogbn-products']
+
     # Number of datasets
-    num_datasets = len(datasets_info)
+    num_datasets = len(ordered_datasets)
 
     # Calculate the number of figures required
     num_figures = (num_datasets + 3) // 4  # Each figure can accommodate 4 datasets (8 plots)
-
-    dataset_names = list(datasets_info.keys())
 
     for fig_num in range(num_figures):
         # Start and end indices for slicing dataset names for the current figure
@@ -156,7 +157,7 @@ def generate_combined_plot(datasets_info, entropy_plots_dir):
         # Create a subplot grid with a maximum of 4 rows and 2 columns for the current figure
         fig, axs = plt.subplots(min(4, end_idx - start_idx), 2, figsize=(24, 8 * min(4, end_idx - start_idx)))
 
-        for idx, dataset_name in enumerate(dataset_names[start_idx:end_idx]):
+        for idx, dataset_name in enumerate(ordered_datasets[start_idx:end_idx]):
             dataset_info = datasets_info[dataset_name]
             dataset_dir = os.path.join(entropy_plots_dir, dataset_name)
 
@@ -184,17 +185,16 @@ def generate_combined_plot(datasets_info, entropy_plots_dir):
         plt.savefig(output_path, format='pdf')
         plt.show()
 
-
 # Dictionary with the number of epochs and x-limits for each dataset
 datasets_info = {
-    'citeseer': {'epochs': 300, 'xlim': 50},
-    'cora': {'epochs': 50, 'xlim': 50},
-    'flickr': {'epochs': 300, 'xlim': 100},
+    'Citeseer': {'epochs': 300, 'xlim': 50},
+    'Cora': {'epochs': 50, 'xlim': 50},
+    'Flickr': {'epochs': 300, 'xlim': 100},
     'ogbn-arxiv': {'epochs': 150, 'xlim': 150},
     'ogbn-products': {'epochs': 100, 'xlim': 100},
-    'pubmed': {'epochs': 300, 'xlim': 100},
-    'reddit': {'epochs': 50, 'xlim': 50},
-    'yelp': {'epochs': 150, 'xlim': 100}
+    'Pubmed': {'epochs': 300, 'xlim': 100},
+    'Reddit': {'epochs': 50, 'xlim': 50},
+    'Yelp': {'epochs': 150, 'xlim': 100}
 }
 
 # Define the path to the 'entropy_plots' directory

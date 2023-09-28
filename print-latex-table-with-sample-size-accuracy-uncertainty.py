@@ -39,7 +39,7 @@ def generate_latex_tables_with_method_names(df: pd.DataFrame, max_methods_per_ta
 \\hline
 {latex_table_content}
 \\end{{tabular}}
-\\caption{{Comparison of methods across different datasets and sampling numbers for {methods_in_this_table}.}}
+\\caption{{Comparison of methods across different datasets and sampling numbers for {methods_in_this_table}. Each experiment was repeated five times. We report the mean and standard deviation of the F1-scores of the node classification results.}}
 \\label{{tab:method_comparison_part_{len(latex_tables) + 1}}}
 \\end{{table}}
 """

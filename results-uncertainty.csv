@@ -159,11 +159,11 @@ grapes,cora,64,87.64,0.08
 grapes,cora,128,87.44,0.387814
 grapes,cora,256,87.29,0.150
 grapes,cora,512,87.4,0.0894427
-grapes,citeseer,32,73.18,1.402
-grapes,citeseer,64,74.14,0.377359
-grapes,citeseer,128,74,0.695701
-grapes,citeseer,256,75.17,0.0680
-grapes,citeseer,512,75.92,0.757364
+grapes,citeseer,32,79.04,0.17
+grapes,citeseer,64,79.26,0.36
+grapes,citeseer,128,79.02,0.37
+grapes,citeseer,256,78.84,0.47
+grapes,citeseer,512,78.12,0.38
 grapes,pubmed,32,89.58,0.172047
 grapes,pubmed,64,89.9,0.209762
 grapes,pubmed,128,90,0.2
