@@ -92,7 +92,7 @@ def plot_on_subplot(csv_mean_0, csv_mean_1, csv_std_0, csv_std_1, steps_per_epoc
     process_and_plot(csv_mean_0, csv_mean_1, csv_std_0, csv_std_1, steps_per_epoch_corrected, xlim_value, ax, dataset_name)
 
 def generate_combined_plot(datasets_info, entropy_plots_dir):
-    ordered_datasets = ['BlogCat', 'snap-patents', 'DBLP', 'ogbn-proteins']
+    ordered_datasets = ['Citeseer', 'Cora', 'Flickr', 'ogbn-arxiv', 'ogbn-products', 'Pubmed', 'Reddit', 'Yelp', 'BlogCat', 'snap-patents', 'DBLP', 'ogbn-proteins']
     num_datasets = len(ordered_datasets)
     num_figures = (num_datasets + 3) // 4
 
