@@ -1,5 +1,8 @@
-To generate figures 5 - 7: 
-python plot-entropy--all.py-all.py
+To generate figure 3: 
+`python plot-sample-size-accuracy-uncertainty.py`
 
-To generate 3: 
+To generate figures 5 - 7: 
+`python python plot-entropy-all.py`
+
+
 
