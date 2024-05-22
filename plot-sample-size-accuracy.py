@@ -2,6 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 
+import scienceplots
 plt.style.use('science')
 
 # Read data from CSV

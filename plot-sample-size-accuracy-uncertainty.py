@@ -2,6 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 
+import scienceplots
 
 def compute_confidence_intervals(df):
     df['Standard Error'] = (df['Accuracy(std)'].astype(float) / np.sqrt(
@@ -134,4 +135,4 @@ fig.text(0.01, 0.5, 'Node Classification F1-scores', va='center', rotation='vert
 fig.text(0.5, -0.05, 'Sample Size (logarithmic base-2)', ha='center', fontsize=15, fontweight='bold')
 
 plt.savefig("sampling_vs_accuracy_confidence_intervals.pdf", format='pdf', bbox_inches='tight')
-plt.show()
+# plt.show()

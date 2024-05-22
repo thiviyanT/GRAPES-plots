@@ -98,7 +98,7 @@ gfn,yelp,32,44.19,0.12
 gfn,yelp,64,44.03,0.28
 gfn,yelp,128,43.43,0.11
 gfn,yelp,256,44.57,0.88
-gfn,yelp,512,,
+gfn,yelp,512,40.15,0.29
 graphsaint,reddit,32,86.20,0.48
 graphsaint,reddit,64,85.20,0.88
 graphsaint,reddit,128,87.33,0.34
